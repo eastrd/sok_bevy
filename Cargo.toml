@@ -12,3 +12,10 @@ bevy_pbr = { git = "https://github.com/bevyengine/bevy", branch = "main", commit
 bevy_sprite = { git = "https://github.com/bevyengine/bevy", branch = "main", commit = "507441d96f83355cdab578d85f804f4bf8d835c9" }
 bevy_text = { git = "https://github.com/bevyengine/bevy", branch = "main", commit = "507441d96f83355cdab578d85f804f4bf8d835c9" }
 bevy_ui = { git = "https://github.com/bevyengine/bevy", branch = "main", commit = "507441d96f83355cdab578d85f804f4bf8d835c9" }
+quick-xml = "0.22.0"
+serde_json = "1.0"
+serde = { version = "1.0.126", features = ["derive"] }
+clap = { version = "2.33.3", features = ["yaml"] }
+rustls = "0.18"
+rand = "0.8.3"
+pathfinding = "3.0.5"
