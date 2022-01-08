@@ -6,12 +6,12 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-bevy = { git = "https://github.com/bevyengine/bevy", branch = "main", commit = "507441d96f83355cdab578d85f804f4bf8d835c9" }
-bevy_render = { git = "https://github.com/bevyengine/bevy", branch = "main", commit = "507441d96f83355cdab578d85f804f4bf8d835c9" }
-bevy_pbr = { git = "https://github.com/bevyengine/bevy", branch = "main", commit = "507441d96f83355cdab578d85f804f4bf8d835c9" }
-bevy_sprite = { git = "https://github.com/bevyengine/bevy", branch = "main", commit = "507441d96f83355cdab578d85f804f4bf8d835c9" }
-bevy_text = { git = "https://github.com/bevyengine/bevy", branch = "main", commit = "507441d96f83355cdab578d85f804f4bf8d835c9" }
-bevy_ui = { git = "https://github.com/bevyengine/bevy", branch = "main", commit = "507441d96f83355cdab578d85f804f4bf8d835c9" }
+bevy = "0.6"
+bevy_render = "0.6"
+bevy_pbr = "0.6"
+bevy_sprite = "0.6"
+bevy_text = "0.6"
+bevy_ui = "0.6"
 quick-xml = "0.22.0"
 serde_json = "1.0"
 serde = { version = "1.0.126", features = ["derive"] }
