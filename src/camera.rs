@@ -12,7 +12,7 @@ struct MouseState {
 }
 
 #[derive(Component)]
-pub struct Camera;
+pub struct SceneCam;
 
 impl Plugin for CameraPlugin {
     fn build(&self, app: &mut App) {
@@ -31,7 +31,7 @@ fn setup_camera(mut commands: Commands) {
             transform: Transform::from_xyz(-2.0, 2.5, 5.0).looking_at(Vec3::ZERO, Vec3::Y),
             ..Default::default()
         })
-        .insert(Camera);
+        .insert(SceneCam);
 }
 
 // grab & lock cursor when game first starts
@@ -45,9 +45,9 @@ fn camera_movement(
     time: Res<Time>,
     input: Res<Input<KeyCode>>,
     windows: Res<Windows>,
-    mut query: Query<(&mut Transform, &Camera)>,
+    mut query: Query<&mut Transform, With<SceneCam>>,
 ) {
-    let (mut cam_tf, _) = query.single_mut();
+    let mut cam_tf = query.single_mut();
     let window = windows.get_primary().unwrap();
     let mut v = Vec3::ZERO;
     let local_z = cam_tf.local_z();
@@ -83,10 +83,10 @@ fn camera_mouse_movement(
     windows: Res<Windows>,
     mut motion_evr: EventReader<MouseMotion>,
     mut state: ResMut<MouseState>,
-    mut query: Query<(&mut Transform, &Camera)>,
+    mut query: Query<&mut Transform, With<SceneCam>>,
 ) {
     let window = windows.get_primary().unwrap();
-    let (mut camera_tf, _) = query.single_mut();
+    let mut camera_tf = query.single_mut();
 
     for ev in motion_evr.iter() {
         if window.cursor_locked() && window.is_focused() {

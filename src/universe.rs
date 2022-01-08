@@ -9,7 +9,7 @@ struct Connection {
 }
 
 // Describe a planet and its connections
-struct Planet {
+pub struct Planet {
     name: String,
     conns: Vec<Connection>,
     // One planet can belong to multiple galaxies
@@ -17,11 +17,11 @@ struct Planet {
 }
 
 // Describe the set (e.g. Stack Overflow, Ask Ubuntu) of a bunch of planets
-struct Galaxy {
+pub struct Galaxy {
     name: String,
 }
 
-fn generate_universe_cartography() -> (HashMap<String, Galaxy>, HashMap<String, Planet>) {
+pub fn generate_universe_cartography() -> (HashMap<String, Galaxy>, HashMap<String, Planet>) {
     // Generate Galaxies
     let meta_relations = get_all_relations("datasets/");
     let mut galaxies: HashMap<String, Galaxy> = HashMap::new();
