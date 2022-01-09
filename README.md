@@ -14,6 +14,9 @@
 - Hit \` to show/hide the console at the bottom of screen. Then type `fps` and `ENTER` to show/hide the `FPS counter` on top left.
 
 ## Notes
-- I would recommend to place JSON datasets whose overall size is less than 60kb for performance reasons.
+- I would recommend to place JSON datasets whose overall size is less than 70kb for performance reasons.
 
 
+## Screen Capture
+
+![Screen Capture](screencapture.gif)
