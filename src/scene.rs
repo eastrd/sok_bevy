@@ -48,7 +48,7 @@ impl Plugin for ScenePlugin {
             .add_startup_system(setup_universe)
             .add_system(update_text_position)
             .add_system(update_text_visibility);
-        // .add_system(update_text_scale);
+        // .add_system(update_text_scale); // <- Too laggy, need to optimize performance first
     }
 }
 
@@ -185,7 +185,7 @@ fn setup_universe(
             .insert(PlanetLabel)
             .id();
 
-        println!("[{}] ({:.1},{:.1},{:.1})", planet_name, x, y, z);
+        // println!("[{}] ({:.1},{:.1},{:.1})", planet_name, x, y, z);
 
         mapping.label_to_planet.insert(label_id, planet_id);
     }
