@@ -3,17 +3,17 @@ use std::collections::{HashMap, HashSet};
 
 // Describe a single connection between two planets
 #[derive(Debug)]
-struct Connection {
-    planet_pairs: HashSet<(String, String)>,
-    count: i32,
+pub struct Connection {
+    pub planet_pairs: (String, String),
+    pub count: i32,
 }
 
 // Describe a planet and its connections
 pub struct Planet {
-    name: String,
-    conns: Vec<Connection>,
+    pub name: String,
+    pub conns: Vec<Connection>,
     // One planet can belong to multiple galaxies
-    belong_galaxy: HashSet<String>,
+    pub belong_galaxy: HashSet<String>,
 }
 
 // Describe the set (e.g. Stack Overflow, Ask Ubuntu) of a bunch of planets
@@ -72,11 +72,9 @@ pub fn generate_universe_cartography() -> (HashMap<String, Galaxy>, HashMap<Stri
                     continue;
                 }
                 let mut conn = Connection {
-                    planet_pairs: HashSet::new(),
+                    planet_pairs: (planet_name.to_string(), t.name.clone()),
                     count: t.count,
                 };
-                conn.planet_pairs
-                    .insert((planet_name.to_string(), t.name.clone()));
                 p.conns.push(conn);
             }
             explored_planets.insert(planet_name.to_string());
