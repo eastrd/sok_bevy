@@ -3,8 +3,8 @@ use std::{collections::HashMap, fmt::Debug};
 use bevy::prelude::*;
 use rand::{thread_rng, Rng};
 
-const FONT_SIZE_DEFAULT: f32 = 10.;
-const RANDOM_SPACE_LIMIT: f32 = 10000.;
+const FONT_SIZE_DEFAULT: f32 = 20.;
+const RANDOM_SPACE_LIMIT: f32 = 4000.;
 const PLANET_RADIUS: f32 = 50.;
 const PLANET_SUBDIVISIONS: usize = 1;
 const FONT_PATH: &str = "fonts/FiraMono-Medium.ttf";
@@ -17,6 +17,12 @@ use crate::{
 };
 
 use bevy_render::camera::Camera;
+
+#[derive(Debug, Clone, Eq, PartialEq, Hash)]
+enum PlanetConnInitState {
+    Todo,
+    Done,
+}
 
 #[derive(Component)]
 struct PlanetComp;
@@ -35,6 +41,7 @@ struct CartographyRes {
 #[derive(Debug)]
 struct Index {
     label_to_planet: HashMap<Entity, Entity>,
+    name_to_planet: HashMap<String, Entity>,
 }
 
 pub struct ScenePlugin;
@@ -44,8 +51,14 @@ impl Plugin for ScenePlugin {
         app.insert_resource(CartographyRes { planets, galaxies })
             .insert_resource(Index {
                 label_to_planet: HashMap::new(),
+                name_to_planet: HashMap::new(),
             })
-            .add_startup_system(setup_universe)
+            .add_startup_system(setup_planets)
+            .add_state(PlanetConnInitState::Todo)
+            .add_system_set(
+                SystemSet::on_enter(PlanetConnInitState::Todo)
+                    .with_system(setup_planetary_connections),
+            )
             .add_system(update_text_position)
             .add_system(update_text_visibility);
         // .add_system(update_text_scale); // <- Too laggy, need to optimize performance first
@@ -98,10 +111,6 @@ fn update_text_visibility(
             } else {
                 text_visibility.is_visible = true;
             }
-            // let new_font_size = RANDOM_SPACE_LIMIT / dist * FONT_SIZE_DEFAULT;
-            // if new_font_size > 1. {
-            //     text.sections[0].style.font_size = new_font_size;
-            // }
         }
     }
 }
@@ -131,7 +140,7 @@ fn update_text_scale(
     }
 }
 
-fn setup_universe(
+fn setup_planets(
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<StandardMaterial>>,
@@ -188,5 +197,55 @@ fn setup_universe(
         // println!("[{}] ({:.1},{:.1},{:.1})", planet_name, x, y, z);
 
         mapping.label_to_planet.insert(label_id, planet_id);
+        mapping
+            .name_to_planet
+            .insert(planet_name.to_string(), planet_id);
+    }
+}
+
+fn setup_planetary_connections(
+    mut commands: Commands,
+    mut meshes: ResMut<Assets<Mesh>>,
+    mut materials: ResMut<Assets<StandardMaterial>>,
+    asset_server: Res<AssetServer>,
+    cartography: Res<CartographyRes>,
+    index: Res<Index>,
+    planet_q: Query<&Transform, With<PlanetComp>>,
+) {
+    for (planet_a_name, planet_a) in &cartography.planets {
+        let planet_a_entity = index.name_to_planet.get(planet_a_name).unwrap();
+        let planet_a_transform = planet_q.get(*planet_a_entity).unwrap();
+
+        // generate lines for each planet connection
+        for conn in &planet_a.conns {
+            let (_, planet_b_name) = &conn.planet_pairs;
+            let planet_b_entity = index.name_to_planet.get(planet_b_name).unwrap();
+            let planet_b_transform = planet_q.get(*planet_b_entity).unwrap();
+            // calculate the direction between planet a and b
+            let rot = planet_a_transform.translation - planet_b_transform.translation;
+
+            // find the middle point between a and b
+            let middle_vec = (planet_a_transform.translation + planet_b_transform.translation) / 2.;
+
+            // find distance between a and b as the length of cube
+            let dist = planet_a_transform
+                .translation
+                .distance(planet_b_transform.translation);
+
+            commands.spawn_bundle(PbrBundle {
+                mesh: meshes.add(Mesh::from(shape::Box::new(5., dist, 5.))),
+                material: materials.add(Color::WHITE.into()),
+                transform: Transform {
+                    translation: middle_vec,
+                    rotation: Quat::from_rotation_arc(
+                        Vec3::Y,
+                        (planet_b_transform.translation - planet_a_transform.translation)
+                            .normalize(),
+                    ),
+                    ..Default::default()
+                },
+                ..Default::default()
+            });
+        }
     }
 }
