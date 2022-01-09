@@ -65,7 +65,7 @@ pub fn generate_universe_cartography() -> (HashMap<String, Galaxy>, HashMap<Stri
     for meta in meta_relations.iter() {
         // create connections from tags
         for (planet_name, connected_tags) in meta.relation_map.iter() {
-            let mut p = planets.get_mut(planet_name).unwrap();
+            let p = planets.get_mut(planet_name).unwrap();
             for t in connected_tags.iter() {
                 // check if target planet has already been explored and skip accordingly
                 if let Some(_) = explored_planets.get(&t.name) {
