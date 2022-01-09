@@ -1,6 +1,6 @@
 #![allow(unused)]
 
-use bevy::{asset::Asset, prelude::*};
+use bevy::prelude::*;
 use camera::CameraPlugin;
 use debug::DebugPlugin;
 use scene::ScenePlugin;

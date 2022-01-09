@@ -1,6 +1,6 @@
 use std::{collections::HashMap, fmt::Debug};
 
-use bevy::{asset::Asset, prelude::*};
+use bevy::prelude::*;
 use rand::{thread_rng, Rng};
 
 const FONT_SIZE_DEFAULT: f32 = 10.;
