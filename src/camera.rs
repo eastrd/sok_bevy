@@ -1,9 +1,8 @@
-use bevy::{app::Events, input::mouse::MouseMotion, prelude::*};
+use bevy::{input::mouse::MouseMotion, prelude::*};
 
-// const CAMERA_MOVE_SPEED: f32 = 200.;
-const CAMERA_MOVE_SPEED: f32 = 100.;
+const CAMERA_MOVE_SPEED: f32 = 700.;
 const CAMERA_SENSITIVITY: f32 = 0.00012;
-const CAMERA_RENDER_DISTANCE: f32 = 5000.0;
+const CAMERA_RENDER_DISTANCE: f32 = 10000.0;
 
 pub struct CameraPlugin;
 
@@ -43,7 +42,7 @@ fn setup_camera(mut commands: Commands) {
 
 // grab & lock cursor when game first starts
 fn setup_cursor_lock(mut windows: ResMut<Windows>) {
-    let mut window = windows.get_primary_mut().unwrap();
+    let window = windows.get_primary_mut().unwrap();
     window.set_cursor_lock_mode(!window.cursor_locked());
     window.set_cursor_visibility(!window.cursor_visible());
 }
