@@ -9,6 +9,7 @@ pub struct Connection {
 }
 
 // Describe a planet and its connections
+#[derive(Debug)]
 pub struct Planet {
     pub name: String,
     pub conns: Vec<Connection>,
