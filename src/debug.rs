@@ -149,6 +149,7 @@ fn update_fps(diagnostics: Res<Diagnostics>, mut query: Query<&mut Text, With<FP
             if let Some(average) = fps.average() {
                 // Update the value of the second section
                 text.sections[1].value = format!("{:.2}", average);
+                println!("FPS: {:.2}", average);
             }
         }
     }
