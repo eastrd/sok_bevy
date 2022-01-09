@@ -10,6 +10,8 @@ const PLANET_SUBDIVISIONS: usize = 1;
 const FONT_PATH: &str = "fonts/FiraMono-Medium.ttf";
 const FONT_COLOR: Color = Color::GOLD;
 const LABEL_FADE_DISTANCE: f32 = 4000.;
+const CONN_MAX_WIDTH: f32 = 20.;
+const CONN_MIN_WIDTH: f32 = 0.2;
 
 use crate::{
     camera::SceneCam,
@@ -18,6 +20,9 @@ use crate::{
 
 use bevy_render::camera::Camera;
 
+// we need to query entities during a startup system
+//  so we use this trick to call the startup system
+//   at runtime
 #[derive(Debug, Clone, Eq, PartialEq, Hash)]
 enum PlanetConnInitState {
     Todo,
@@ -232,8 +237,15 @@ fn setup_planetary_connections(
                 .translation
                 .distance(planet_b_transform.translation);
 
+            // calculate connection width based on its weight
+            let weight = conn.count;
+            let width: f32 = match weight {
+                0..=2 => CONN_MIN_WIDTH,
+                1000.. => CONN_MAX_WIDTH,
+                x => (CONN_MAX_WIDTH - CONN_MIN_WIDTH) * (x as f32 / 1000.) + CONN_MIN_WIDTH,
+            };
             commands.spawn_bundle(PbrBundle {
-                mesh: meshes.add(Mesh::from(shape::Box::new(5., dist, 5.))),
+                mesh: meshes.add(Mesh::from(shape::Box::new(width, dist, width))),
                 material: materials.add(Color::WHITE.into()),
                 transform: Transform {
                     translation: middle_vec,
