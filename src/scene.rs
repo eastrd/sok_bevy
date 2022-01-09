@@ -9,6 +9,7 @@ const PLANET_RADIUS: f32 = 50.;
 const PLANET_SUBDIVISIONS: usize = 1;
 const FONT_PATH: &str = "fonts/FiraMono-Medium.ttf";
 const FONT_COLOR: Color = Color::GOLD;
+const LABEL_FADE_DISTANCE: f32 = 4000.;
 
 use crate::{
     camera::SceneCam,
@@ -45,7 +46,8 @@ impl Plugin for ScenePlugin {
                 label_to_planet: HashMap::new(),
             })
             .add_startup_system(setup_universe)
-            .add_system(update_text_position);
+            .add_system(update_text_position)
+            .add_system(update_text_visibility);
         // .add_system(update_text_scale);
     }
 }
@@ -69,6 +71,37 @@ fn update_text_position(
                 style.position.left = Val::Px(coords.x);
                 style.position.bottom = Val::Px(coords.y);
             }
+        }
+    }
+}
+
+fn update_text_visibility(
+    mut text_q: Query<(Entity, &mut Text, &mut Visibility), With<PlanetLabel>>,
+    planet_q: Query<&GlobalTransform, With<PlanetComp>>,
+    camera_q: Query<(&Camera, &GlobalTransform), With<SceneCam>>,
+    index: Res<Index>,
+) {
+    // Update text label scale to reflect distance
+    for (camera, cam_transform) in camera_q.iter() {
+        for (text_entity, mut text, mut text_visibility) in text_q.iter_mut() {
+            let planet_entity = index.label_to_planet.get(&text_entity).unwrap();
+            let planet_transform = planet_q.get(*planet_entity).unwrap();
+
+            // As text is on the UI,
+            // need the corresponding planetary data for distance calculation
+            let dist = planet_transform
+                .translation
+                .distance(cam_transform.translation);
+
+            if dist >= LABEL_FADE_DISTANCE {
+                text_visibility.is_visible = false;
+            } else {
+                text_visibility.is_visible = true;
+            }
+            // let new_font_size = RANDOM_SPACE_LIMIT / dist * FONT_SIZE_DEFAULT;
+            // if new_font_size > 1. {
+            //     text.sections[0].style.font_size = new_font_size;
+            // }
         }
     }
 }
