@@ -11,6 +11,11 @@ mod debug;
 mod scene;
 mod universe;
 
+struct WinSize {
+    pub w: f32,
+    pub h: f32,
+}
+
 // Generate an interconnected universe of stack exchange using Bevy 3D
 fn main() {
     App::new()
@@ -26,5 +31,15 @@ fn main() {
         .add_plugin(ScenePlugin)
         .add_plugin(CameraPlugin)
         .add_plugin(DebugPlugin)
+        .add_startup_system(setup_window_size)
         .run();
+}
+
+fn setup_window_size(mut commands: Commands, mut windows: ResMut<Windows>) {
+    let window = windows.get_primary_mut().unwrap();
+
+    commands.insert_resource(WinSize {
+        w: window.width(),
+        h: window.height(),
+    });
 }

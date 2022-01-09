@@ -1,6 +1,7 @@
 use std::{collections::HashMap, fmt::Debug};
 
 use bevy::prelude::*;
+use pathfinding::prelude::directions::W;
 use rand::{thread_rng, Rng};
 
 const FONT_SIZE_DEFAULT: f32 = 20.;
@@ -16,6 +17,7 @@ const CONN_MIN_WIDTH: f32 = 0.2;
 use crate::{
     camera::SceneCam,
     universe::{generate_universe_cartography, Galaxy, Planet},
+    WinSize,
 };
 
 use bevy_render::camera::Camera;
@@ -72,13 +74,14 @@ impl Plugin for ScenePlugin {
 
 fn update_text_position(
     windows: Res<Windows>,
-    mut text_q: Query<(Entity, &mut Style), With<PlanetLabel>>,
+    mut text_q: Query<(Entity, &mut Style, &mut Visibility), With<PlanetLabel>>,
     planet_q: Query<&GlobalTransform, With<PlanetComp>>,
     camera_q: Query<(&Camera, &GlobalTransform), With<SceneCam>>,
     index: Res<Index>,
+    win_size: Res<WinSize>,
 ) {
     for (camera, cam_transform) in camera_q.iter() {
-        for (text_entity, mut style) in text_q.iter_mut() {
+        for (text_entity, mut style, mut visibility) in text_q.iter_mut() {
             // Use index to query planet by its text label for performance saving
             let planet_entity = index.label_to_planet.get(&text_entity).unwrap();
             let planet_transform = planet_q.get(*planet_entity).unwrap();
@@ -86,6 +89,14 @@ fn update_text_position(
             if let Some(coords) =
                 camera.world_to_screen(&windows, cam_transform, planet_transform.translation)
             {
+                // if planet not in sight, then skip update
+                if coords.y > win_size.h * 2.
+                    || coords.y < -win_size.h * 2.
+                    || coords.x > win_size.w * 2.
+                    || coords.x < -win_size.w * 2.
+                {
+                    continue;
+                }
                 style.position.left = Val::Px(coords.x);
                 style.position.bottom = Val::Px(coords.y);
             }
@@ -94,10 +105,12 @@ fn update_text_position(
 }
 
 fn update_text_visibility(
+    windows: Res<Windows>,
     mut text_q: Query<(Entity, &mut Text, &mut Visibility), With<PlanetLabel>>,
     planet_q: Query<&GlobalTransform, With<PlanetComp>>,
     camera_q: Query<(&Camera, &GlobalTransform), With<SceneCam>>,
     index: Res<Index>,
+    win_size: Res<WinSize>,
 ) {
     // Update text label scale to reflect distance
     for (camera, cam_transform) in camera_q.iter() {
@@ -111,10 +124,20 @@ fn update_text_visibility(
                 .translation
                 .distance(cam_transform.translation);
 
-            if dist >= LABEL_FADE_DISTANCE {
-                text_visibility.is_visible = false;
-            } else {
-                text_visibility.is_visible = true;
+            if let Some(coords) =
+                camera.world_to_screen(&windows, cam_transform, planet_transform.translation)
+            {
+                // if planet not in sight or over fade distance, hide
+                if dist >= LABEL_FADE_DISTANCE
+                    || (coords.y > win_size.h * 2.
+                        || coords.y < -win_size.h * 2.
+                        || coords.x > win_size.w * 2.
+                        || coords.x < -win_size.w * 2.)
+                {
+                    text_visibility.is_visible = false;
+                } else {
+                    text_visibility.is_visible = true;
+                }
             }
         }
     }
