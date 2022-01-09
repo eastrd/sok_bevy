@@ -4,7 +4,7 @@ use bevy::prelude::*;
 use rand::{thread_rng, Rng};
 
 const FONT_SIZE_DEFAULT: f32 = 20.;
-const RANDOM_SPACE_LIMIT: f32 = 4000.;
+const RANDOM_SPACE_LIMIT: f32 = 6000.;
 const PLANET_RADIUS: f32 = 50.;
 const PLANET_SUBDIVISIONS: usize = 1;
 const FONT_PATH: &str = "fonts/FiraMono-Medium.ttf";
@@ -159,6 +159,11 @@ fn setup_planets(
         let x: f32 = rng.gen_range(0.0..RANDOM_SPACE_LIMIT);
         let y: f32 = rng.gen_range(0.0..RANDOM_SPACE_LIMIT);
         let z: f32 = rng.gen_range(0.0..RANDOM_SPACE_LIMIT);
+
+        // let planet_conn_weights: i32 = planet.conns.iter().map(|conn| conn.count).sum();
+        // let radius = (planet_conn_weights as f32 / 10000.)
+        //     * (PLANET_MAX_RADIUS - PLANET_MIN_RADIUS)
+        //     + PLANET_MIN_RADIUS;
 
         let planet_id = commands
             .spawn_bundle(PbrBundle {
