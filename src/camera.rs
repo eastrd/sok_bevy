@@ -1,6 +1,7 @@
 use bevy::{app::Events, input::mouse::MouseMotion, prelude::*};
 
-const CAMERA_MOVE_SPEED: f32 = 10.;
+// const CAMERA_MOVE_SPEED: f32 = 200.;
+const CAMERA_MOVE_SPEED: f32 = 100.;
 const CAMERA_SENSITIVITY: f32 = 0.00012;
 
 pub struct CameraPlugin;
@@ -28,7 +29,12 @@ impl Plugin for CameraPlugin {
 fn setup_camera(mut commands: Commands) {
     commands
         .spawn_bundle(PerspectiveCameraBundle {
-            transform: Transform::from_xyz(-2.0, 2.5, 5.0).looking_at(Vec3::ZERO, Vec3::Y),
+            perspective_projection: PerspectiveProjection {
+                // Adjust render distance to prevent planets disappear
+                far: 10000.0,
+                ..Default::default()
+            },
+            transform: Transform::from_xyz(0., 0., 0.).looking_at(Vec3::ZERO, Vec3::X),
             ..Default::default()
         })
         .insert(SceneCam);
